@@ -52,26 +52,74 @@ def dh_matrix(theta, d, a, alpha):
 def forward_kinematics_all(q):
     """Lista [T00, T01, ..., T06] de transformaciones acumuladas desde la base.
 
-    T00 = identidad; T0i = T0(i-1) @ A_i.  La necesitas completa para el
-    Jacobiano geométrico (z_{i-1} y o_{i-1} salen de T0(i-1)).
+    T00 = identidad; T0i = T0(i-1) @ A_i  (postmultiplicación: cada A_i está
+    expresada en el frame actual). Se devuelven todas porque el Jacobiano
+    geométrico necesita z_{i-1} y o_{i-1} de cada frame.
     """
-    raise NotImplementedError
+    T = np.eye(4)
+    transforms = [T]
+    for i in range(len(DH_TABLE)):
+        theta_offset, d, a, alpha = DH_TABLE[i]
+        theta = q[i] + theta_offset
+        T = T @ dh_matrix(theta, d, a, alpha)
+        transforms.append(T)
+    return transforms
 
 
 def forward_kinematics(q):
-    """T06 (4x4) del efector respecto de 'base'."""
-    raise NotImplementedError
+    """T06 (4x4) del efector (tool0) respecto del frame 'base'."""
+    return forward_kinematics_all(q)[-1]
 
 
 def position_jacobian(q):
-    """Jacobiano posicional Jv (3x6): columna i = z_{i-1} x (o_6 - o_{i-1})."""
-    raise NotImplementedError
+    """Jacobiano posicional Jv (3x6), método geométrico.
+
+    Columna i:  z_{i-1} x (p - o_{i-1})
+    """
+    T = forward_kinematics_all(q)    # [T00, T01, ..., T06]
+    p = T[6][:3, 3]                  # posición del efector (o6)
+
+    J = np.zeros((3, 6))
+    for i in range(6):
+        z = T[i][:3, 2]              # eje de giro de la articulación i+1
+        o = T[i][:3, 3]              # origen de ese eje
+        J[:, i] = np.cross(z, p - o)
+
+    return J
 
 
 def rotation_to_quaternion(R):
     """Convierte R (3x3) a cuaternión (x, y, z, w).
 
-    Pista: método de la traza; si 1 + traza(R) es pequeño, usa la rama del
-    mayor elemento de la diagonal para evitar dividir por ~0.
+    Rama principal: w = 0.5*sqrt(1 + traza). Si el giro es cercano a 180°
+    (w ~ 0), se calcula primero la componente mayor de la diagonal para no
+    dividir entre ~0.
     """
-    raise NotImplementedError
+    traza = R[0, 0] + R[1, 1] + R[2, 2]
+
+    if traza > 0:
+        s = 2.0 * np.sqrt(1.0 + traza)          # s = 4w
+        w = 0.25 * s
+        x = (R[2, 1] - R[1, 2]) / s
+        y = (R[0, 2] - R[2, 0]) / s
+        z = (R[1, 0] - R[0, 1]) / s
+    elif R[0, 0] > R[1, 1] and R[0, 0] > R[2, 2]:
+        s = 2.0 * np.sqrt(1.0 + R[0, 0] - R[1, 1] - R[2, 2])   # s = 4x
+        w = (R[2, 1] - R[1, 2]) / s
+        x = 0.25 * s
+        y = (R[0, 1] + R[1, 0]) / s
+        z = (R[0, 2] + R[2, 0]) / s
+    elif R[1, 1] > R[2, 2]:
+        s = 2.0 * np.sqrt(1.0 + R[1, 1] - R[0, 0] - R[2, 2])   # s = 4y
+        w = (R[0, 2] - R[2, 0]) / s
+        x = (R[0, 1] + R[1, 0]) / s
+        y = 0.25 * s
+        z = (R[1, 2] + R[2, 1]) / s
+    else:
+        s = 2.0 * np.sqrt(1.0 + R[2, 2] - R[0, 0] - R[1, 1])   # s = 4z
+        w = (R[1, 0] - R[0, 1]) / s
+        x = (R[0, 2] + R[2, 0]) / s
+        y = (R[1, 2] + R[2, 1]) / s
+        z = 0.25 * s
+
+    return np.array([x, y, z, w])
