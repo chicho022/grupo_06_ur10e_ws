@@ -16,13 +16,16 @@ JOINT_NAMES = [
     'wrist_3_joint',
 ]
 
-# Tabla DH (de Sebastián, validada contra TF). Una fila por articulación:
-# (offset_theta [rad], d [m], a [m], alpha [rad]);  theta_i = q_i + offset_theta
+# Tabla DH estándar del UR10e (coincide con la de Universal Robots y con el informe).
+# Una fila por articulación: (offset_theta [rad], d [m], a [m], alpha [rad]);
+# theta_i = q_i + offset_theta. Todos los offsets son 0: la configuración cero del URDF
+# coincide con la configuración cero DH. Los x_i apuntan en sentido opuesto al avance
+# del brazo (por eso a2 y a3 son negativos), igual que el eje x del frame 'base'.
 DH_TABLE = [
     # offset_th  d [m]     a [m]      alpha [rad]
-    (np.pi,      0.1807,   0.0,      -np.pi / 2),  # 1: base -> hombro     (theta1 = q1 + pi)
-    (0.0,        0.0,      0.6127,    0.0),        # 2: hombro -> codo     (x2 hacia el codo)
-    (np.pi,      0.0,     -0.57155,   0.0),        # 3: codo -> muñeca 1   (theta3 = q3 + pi)
+    (0.0,        0.1807,   0.0,       np.pi / 2),  # 1: base -> hombro
+    (0.0,        0.0,     -0.6127,    0.0),        # 2: hombro -> codo (brazo)
+    (0.0,        0.0,     -0.57155,   0.0),        # 3: codo -> muñeca 1 (antebrazo)
     (0.0,        0.17415,  0.0,       np.pi / 2),  # 4: muñeca 1 -> muñeca 2
     (0.0,        0.11985,  0.0,      -np.pi / 2),  # 5: muñeca 2 -> muñeca 3
     (0.0,        0.11655,  0.0,       0.0),        # 6: muñeca 3 -> tool0 (brida)
