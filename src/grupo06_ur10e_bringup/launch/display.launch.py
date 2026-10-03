@@ -38,7 +38,7 @@ def generate_launch_description():
         DeclareLaunchArgument(
             "rviz_config",
             default_value=PathJoinSubstitution(
-                [FindPackageShare("ur_description"), "rviz", "view_robot.rviz"]
+                [FindPackageShare("grupo06_ur10e_bringup"), "rviz", "ur10e.rviz"]
             ),
             description="Archivo de configuración de RViz2.",
         ),
