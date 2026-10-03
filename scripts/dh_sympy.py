@@ -178,4 +178,3 @@ print(f"   Rango de la matriz Jv = {rango_q_zero} (Debería ser 3 para no ser si
 if rango_q_zero < 3:
     print("   ✓ SINGULARIDAD DETECTADA: Al estar estirado, el robot pierde")
     print("     grados de libertad posicionales (no puede moverse en ciertas direcciones).")
-    print("   -> ADVERTENCIA PARA MARCO: No usar q=0 como semilla para la IK.")
