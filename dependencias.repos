@@ -1,0 +1,5 @@
+repositories:
+  ur_description:
+    type: git
+    url: https://github.com/UniversalRobots/Universal_Robots_ROS2_Description.git
+    version: 6b639c2efd9f4f12da858a72cf1a9e40da365ed8

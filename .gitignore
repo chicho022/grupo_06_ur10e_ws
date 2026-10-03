@@ -1,0 +1,16 @@
+# Generados por colcon 
+build/
+install/
+log/
+
+# Dependencia externa 
+src/ur_description/
+
+# Python
+__pycache__/
+*.pyc
+*.egg-info/
+
+# Editores
+.vscode/
+.idea/
