@@ -1,0 +1,5 @@
+# Dependencias Python del proyecto.
+# En Ubuntu 24.04 se instalan con apt (instalar.sh lo hace: python3-numpy, python3-sympy),
+# porque pip está restringido en el Python del sistema (PEP 668).
+numpy        # nodos fk_node / ik_node (matrices DH, Jacobiano, pseudoinversa)
+sympy        # solo scripts/dh_sympy.py (derivación simbólica para el informe)
