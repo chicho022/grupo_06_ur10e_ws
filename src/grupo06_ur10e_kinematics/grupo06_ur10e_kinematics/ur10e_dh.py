@@ -37,11 +37,7 @@ JOINT_LIMITS_UPPER = np.array([2 * np.pi, 2 * np.pi, np.pi, 2 * np.pi, 2 * np.pi
 
 
 def dh_matrix(theta, d, a, alpha):
-    """Matriz homogénea 4x4 A_i para una fila DH (ecuación 6 de la plantilla).
-
-    A = Rz(theta) * Tz(d) * Tx(a) * Rx(alpha)
-    Columnas 1-3: ejes x_i, y_i, z_i del frame nuevo expresados en el anterior.
-    Columna 4: origen O_i del frame nuevo expresado en el anterior.
+    """Matriz homogénea 4x4 A_i para una fila DH.
     """
     ct, st = np.cos(theta), np.sin(theta)
     ca, sa = np.cos(alpha), np.sin(alpha)
@@ -94,9 +90,6 @@ def position_jacobian(q):
 def rotation_to_quaternion(R):
     """Convierte R (3x3) a cuaternión (x, y, z, w).
 
-    Rama principal: w = 0.5*sqrt(1 + traza). Si el giro es cercano a 180°
-    (w ~ 0), se calcula primero la componente mayor de la diagonal para no
-    dividir entre ~0.
     """
     traza = R[0, 0] + R[1, 1] + R[2, 2]
 
