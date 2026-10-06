@@ -1,10 +1,5 @@
 #!/usr/bin/env python3
 """UR10e (Grupo 6) - Paso 3: DH estándar, T06, p(q), R(q) y comprobaciones.
-
-Convención de frames (la del docente): x1 y x2 apuntan hacia el brazo,
-x3...x6 hacia -brazo (igual que x0). Por eso hay offsets de pi en theta1 y theta3.
-Todos los valores d, a vienen de physical_parameters.yaml (verifícalos).
-Unidades: metros y radianes.
 """
 import sympy as sp
 import numpy as np
@@ -18,8 +13,8 @@ pi = sp.pi
 
 # (offset de theta, d, a, alpha)  ->  theta_i = q_i + offset
 TABLA = [
-    (pi,  D1,  0,   -pi / 2),   # A1: base -> hombro
-    (0,   0,   A2,   0),        # A2: hombro -> codo
+    (pi,  D1,  0,   pi / 2),   # A1: base -> hombro
+    (0,   0,   -A2,   0),        # A2: hombro -> codo
     (pi,  0,  -A3,   0),        # A3: codo -> muñeca 1
     (0,   D4,  0,    pi / 2),   # A4: muñeca 1 -> muñeca 2
     (0,   D5,  0,   -pi / 2),   # A5: muñeca 2 -> muñeca 3
@@ -99,9 +94,7 @@ qd_cmp = qd if np.dot(qd, QUAT_TF) >= 0 else -qd   # q y -q son la misma rotaci�
 print("cuaternión DH =", np.round(qd_cmp, 4), " TF =", QUAT_TF)
 
 
-# ================================================================
-# PASO 4: JACOBIANO POSICIONAL (Jv) Y SINGULARIDADES
-# ================================================================
+# JACOBIANO POSICIONAL (Jv) Y SINGULARIDADES
 print("\n" + "="*50)
 print("PASO 4: CÁLCULO DEL JACOBIANO POSICIONAL (Jv)")
 print("="*50)
@@ -142,9 +135,7 @@ for i in range(6):
 # Simplificar la matriz geométrica
 Jv_g = simp(Jv_g)
 
-# ----------------------------------------------------------------
 # 3. COMPROBACIONES (Caso #1)
-# ----------------------------------------------------------------
 # Evaluar ambos jacobianos en la configuración del Caso #1
 Jv_a_num = np.array(Jv_a.subs(dict(zip(q, Q1))).evalf(), dtype=float)
 Jv_g_num = np.array(Jv_g.subs(dict(zip(q, Q1))).evalf(), dtype=float)
@@ -163,9 +154,7 @@ sp.pprint(Jv_a[:, 5])
 print("   Conclusión: Sale 0 porque el motor wrist_3 (q6) gira el efector")
 print("   sobre su propio eje Z5, sin desplazar el origen O6 en x, y, o z.")
 
-# ----------------------------------------------------------------
 # 4. SINGULARIDADES (rango en q = 0)
-# ----------------------------------------------------------------
 # Evaluar Jv en configuración totalmente estirada (todos los q = 0)
 q_zero = [0, 0, 0, 0, 0, 0]
 Jv_zero_num = np.array(Jv_a.subs(dict(zip(q, q_zero))).evalf(), dtype=float)
