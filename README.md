@@ -243,8 +243,8 @@ grupo_06_ur10e_ws/
 ## 11. Entrega
 
 - Rama de entrega: `main`
-- Commit evaluado: `[HASH DEL COMMIT FINAL]`
-- Informe: `docs/[NOMBRE_DEL_INFORME].pdf`
+- Commit evaluado: `7be7932ae0fc35a3f650d9c0e3035e321663679b`
+- Informe: `docs/IMT342_arinez_jaldin.pdf`
 
 ## Licencia
 
